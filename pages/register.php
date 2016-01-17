@@ -11,33 +11,40 @@ require('connexion.php');
     $email = htmlspecialchars($_POST['email']);
     $sexe = $_POST['sexe'];
 
-    if (empty($pseudo)) {
-      $errors[]="Pseudo svp";
-    }
-    if (empty($password)) {
-      $errors[]="Password svp";
-    }
-    if ($password != $repeatpassword) {
-      $errors[] = "Vos deux password sont différents";
-    }
-    if (empty($email)) {
-      $errors[]="Email incorrecte";
-    }
-    if (!empty($errors)) {
-      foreach ($errors as $error) {
-        echo "<div class='error'>".$error."</div>";
-      }
-    }
 
-      //Insert des données
-      $sql = "INSERT INTO users ( pseudo, password, email, sexe) VALUES (:pseudo, :password, :email, :sexe)";
-      $query = $bdd->prepare( $sql );
-      $result = $query->execute( array( ':pseudo'=>$pseudo, ':password'=>$password, ':email'=>$email, ':sexe'=>$sexe) );
+
+    if (!empty($pseudo) AND !empty($password) AND !empty($repeatpassword) AND !empty($email)) {
+
+      $pseudolength = strlen($pseudo);
+
+      if ($pseudolength <= 40) {
+
+        $verifaccount = $bdd ->prepare("SELECT * FROM users WHERE pseudo = ?");
+        $verifaccount -> execute(array($pseudo));
+        $pseudoexist = $verifaccount->rowCount();
+
+        if ($pseudoexist == 0) {
+          if ($password == $repeatpassword) {
+
+            $insertuser = "INSERT INTO users ( pseudo, password, email, sexe) VALUES (:pseudo, :password, :email, :sexe)";
+            $query = $bdd->prepare( $insertuser );
+            $result = $query->execute( array( ':pseudo'=>$pseudo, ':password'=>$password, ':email'=>$email, ':sexe'=>$sexe) );
+            $erreur = "Votre compte a bien été créé";
+          }else{
+            $erreur = "Vos passwords sont différents";
+          }
+        }else {
+          $erreur = "Pseudo esiste déjà";
+        }
+      }else {
+        $erreur = " Pseudo trop long";
+      }
+  }else {
+  $erreur = "Tous les champs ne sont pas complétés";
+}
       // puis on le redirige vers la page d'accueil
       //header('Location: index.php');
-    }
-
-
+}
 
  ?>
 
@@ -116,9 +123,11 @@ require('connexion.php');
               <input id="submit" type="submit" name="submit" typeclass="btn btn-success">Submit</button>
             </div>
           </div>
-
     </fieldset>
   </form>
+    <?php if (isset($erreur)) {
+      echo $erreur;
+    } ?><br>
       <a href="index.php?page=login">Page de connexion</a>
   </body>
 </html>
