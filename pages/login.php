@@ -1,28 +1,33 @@
 
 <?php
-
+session_start();
+require_once('connexion.php');
 if (isset($_POST['submit'])) {
 
-	// on vérifie les informations du formulaire, à savoir si le pseudo saisi est bien un pseudo autorisé, de même pour le mot de passe
-	if ($login_valide == $_POST['pseudo'] && $pwd_valide == $_POST['password']) {
-		// dans ce cas, tout est ok, on peut démarrer notre session
+	$pseudoconnect = htmlspecialchars($_POST['pseudo']);
+	$passwordconnect = sha1($_POST['password']);
 
-		// on la démarre :)
-		session_start ();
-		// on enregistre les paramètres de notre visiteur comme variables de session ($login et $pwd) (notez bien que l'on utilise pas le $ pour enregistrer ces variables)
-		$_SESSION['pseudo'] = $_POST['pseudo'];
-		$_SESSION['password'] = $_POST['password'];
+echo $passwordconnect;
+		if (!empty($pseudoconnect) AND !empty($passwordconnect)) {
 
-		// on redirige notre visiteur vers une page de notre section membre
-		header ('location: page_membre.php');
+			$verifaccount = $bdd -> prepare("SELECT * FROM users WHERE pseudo = ? AND password = ?");
+			$verifaccount -> execute(array($pseudoconnect, $passwordconnect));
+			$numberofline = $verifaccount->rowCount();
+		  $userinfo = 	$verifaccount->fetch();
+			echo count($userinfo);
+				if ($numberofline == 1) {
+					$_SESSION['id'] = $userinfo['id'];
+					$_SESSION['pseudo'] = $userinfo['pseudo'];
+					$_SESSION['mail'] =  $userinfo['mail'];
+					header('Location: pages/profil.php?id='.$_SESSION['id']);
+				}else {
+					$erreur = "Bad Password Ou MDP";
+				}
+		}else {
+			$erreur ="Tous les champs ne sont pas remplis";
 		}
-		else {
-		// Le visiteur n'a pas été reconnu comme étant membre de notre site. On utilise alors un petit javascript lui signalant ce fait
-		echo '<body onLoad="alert(\'Membre non reconnu...\')">';
-		// puis on le redirige vers la page d'accueil
-		echo '<meta http-equiv="refresh" content="0;URL=index.php">';
 	}
-}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -43,7 +48,6 @@ if (isset($_POST['submit'])) {
           <label class="col-md-4 control-label" for="pseudo">Pseudo</label>
           <div class="col-md-4">
           <input id="pseudo" name="pseudo" type="text" placeholder="Pseudo" class="form-control input-md" required="">
-
           </div>
         </div>
 
@@ -58,7 +62,10 @@ if (isset($_POST['submit'])) {
           <input type="submit" name="submit" value="Se Connecter">
         </fieldset>
       </form>
-      <a href="index.php?page=register">S'inscrire</a>
+      <a href="index.php?page=register">S'inscrire</a><br>
+			<?php if (isset($erreur)) {
+				echo $erreur;
+			} ?>
 
     </form>
   </body>
