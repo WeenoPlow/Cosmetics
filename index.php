@@ -20,16 +20,11 @@ $scanPages = scandir('pages');
 if (!empty($page) && in_array($_GET['page'].".php", $scanPages)) {
   $content = 'pages/'.$_GET['page'].".php";
 }else {
-  header("Location:index.php?page=login");
+  header("Location:index.php?page=page_product");
 }
  ?>
  <!DOCTYPE html>
  <html>
-   <head>
-     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-7s5uDGW3AHqw6xtJmNNtr+OBRJUlgkNJEo78P4b0yRw= sha512-nNo+yCHEyn0smMxSswnf/OnX6/KwJuZTlNZBjauKhTK0c+zT+q5JOCx0UFhXQ6rJR9jg6Es8gPuD2uZcYDLqSw==" crossorigin="anonymous">
-     <meta charset="utf-8">
-     <title></title>
-   </head>
    <body>
      <?php  include($content); ?>
    </body>

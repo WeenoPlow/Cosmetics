@@ -48,16 +48,11 @@ require('connexion.php');
  ?>
 
 <!DOCTYPE html>
-<html>
-  <head>
 
-    <meta charset="utf-8">
-    <title></title>
-  </head>
   <body>
 
-
-      <form class="form-horizontal" method="post" action="">
+<?php require 'header.php'; ?>
+      <form class="form-horizontal col-right col-md-6 col-md-offset-3" method="post" action="">
         <fieldset>
 
         <!-- Form Name -->
@@ -119,7 +114,7 @@ require('connexion.php');
           <div class="form-group">
             <label class="col-md-4 control-label" for="submit"></label>
             <div class="col-md-4">
-              <input id="submit" type="submit" name="submit" typeclass="btn btn-success">Submit</button>
+              <input id="submit" type="submit" name="submit" typeclass="btn btn-success"></button>
             </div>
           </div>
     </fieldset>
